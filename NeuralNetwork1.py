@@ -67,5 +67,4 @@ linear_est = tf.estimator.LinearClassifier(feature_columns=feature_columns)
 linear_est.train(train_input_fn)  # train
 result = linear_est.evaluate(eval_input_fn)  # get model metrics/stats by testing on tetsing data
 
-#clear_output()  # clears console output
 print(result['accuracy'])  # the result variable is simply a dict of stats about our model
