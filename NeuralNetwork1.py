@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 # data frames allows specific columns to be referenced
 dftrain = pd.read_csv('aug_train.csv')
 # head() shows first 5 entries
-print(dftrain.head())
+#print(dftrain.head())
 dftrain['gender'].fillna(value='unknown', inplace=True)
 dftrain['enrolled_university'].fillna(value='unknown', inplace=True)
 dftrain['education_level'].fillna(value='unknown', inplace=True)
@@ -21,9 +21,9 @@ dftrain['last_new_job'].fillna(value='unknown', inplace=True)
 # Storing the output that will be evaluated against later
 output_train  = dftrain.pop('target')
 # show dataset without target column
-print(dftrain.head())
+#print(dftrain.head())
 # show target column, target value is whether or not they are indeed looking for a job
-print(output_train)
+#print(output_train)
 
 # Create histogram showing the distribution of training hours across the dataset
 #dftrain.gender.hist(bins=10)
@@ -46,9 +46,9 @@ for feature_name in CATEGORICAL_COLUMNS:
 for feature_name in NUMERIC_COLUMNS:
   feature_columns.append(tf.feature_column.numeric_column(feature_name, dtype=tf.float32))
 
-print(feature_columns)
+#print(feature_columns)
 
-def make_input_fn(data_df, label_df, num_epochs=10, shuffle=True, batch_size=32):
+def make_input_fn(data_df, label_df, num_epochs=20, shuffle=True, batch_size=32):
   def input_function():  # inner function, this will be returned
     ds = tf.data.Dataset.from_tensor_slices((dict(data_df), label_df))  # create tf.data.Dataset object with data and its label
     if shuffle:
@@ -61,10 +61,19 @@ train_input_fn = make_input_fn(dftrain, output_train)  # here we will call the i
 # This eval input is the exact same as the training input which can lead to the neural network to just memorize the data set and if I were to give it a slightly different dataset to evaluate it might perform a lot worse
 eval_input_fn = make_input_fn(dftrain, output_train, num_epochs=1, shuffle=False)
 
+print("Something1")
 linear_est = tf.estimator.LinearClassifier(feature_columns=feature_columns)
 # We create a linear estimtor by passing the feature columns we created earlier
-
+print("Something2")
 linear_est.train(train_input_fn)  # train
+print("Something3")
 result = linear_est.evaluate(eval_input_fn)  # get model metrics/stats by testing on tetsing data
 
 print(result['accuracy'])  # the result variable is simply a dict of stats about our model
+print(result)
+
+print("Something4")
+result = list(linear_est.predict(eval_input_fn))
+print(dftrain.loc[0])
+print(output_train[0])
+print(result[0]['probabilities'][0])
