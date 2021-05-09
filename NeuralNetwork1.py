@@ -96,7 +96,7 @@ history = model.fit(train, output_train_cat, validation_data=(test, output_test_
 #plt.show()
 
 # Load best model generated
-#model.load_weights('my_best_model.hdf5')
+model.load_weights('my_best_model.hdf5')
 
 # Evaluate against training set
 scores = model.evaluate(train, output_train_cat)
@@ -114,7 +114,7 @@ prediction = model.predict(validation)
 print(output_validation_cat[0:10])
 print(prediction[0:10].round())
 
-plt.plot(output_test, prediction, '.', alpha=0.3)
+plt.plot(output_validation_cat, prediction, '.', alpha=0.3)
 plt.xlabel('Correct labels')
 plt.ylabel('Predicted confidence scores')
 plt.show()
