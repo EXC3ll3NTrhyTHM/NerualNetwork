@@ -97,6 +97,8 @@ history = model.fit(train, output_train_cat, validation_data=(test, output_test_
 
 # Load best model generated
 #model.load_weights('my_best_model.hdf5')
+
+# Evaluate against training set
 scores = model.evaluate(train, output_train_cat)
 print('training data')
 print(model.metrics_names)
