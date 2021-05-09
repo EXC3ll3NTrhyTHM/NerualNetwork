@@ -46,8 +46,6 @@ major_cat = pd.get_dummies(df['major_discipline'], prefix='major')
 comp_size_cat = pd.get_dummies(df['company_size'], prefix='comp_size')
 comp_type_cat = pd.get_dummies(df['company_type'], prefix='comp_type')
 
-#print(comp_type_cat.head())
-
 df.drop(['gender','enrolled_university','education_level','major_discipline','company_size','company_type'], axis=1,inplace=True)
 df = pd.concat((df, gender_cat, univer_cat, edu_cat, major_cat, comp_size_cat, comp_type_cat), axis=1)
 
@@ -63,14 +61,17 @@ test, validation = train_test_split(test_validation, test_size=0.5)
 
 # Storing the output that will be evaluated against later
 output_train  = train.pop('target')
+output_train_cat = pd.get_dummies(output_train)
 output_test = test.pop('target')
+output_test_cat = pd.get_dummies(output_test)
 output_validation = validation.pop('target')
+output_validation_cat = pd.get_dummies(output_validation)
 
+# Most code below came from here https://www.youtube.com/watch?v=cJ3oqHqRBF0&t=257s&ab_channel=BadriAdhikari
 # Neural Network architecture
 model = Sequential()
-model.add(Dense(4, input_dim=len(train.columns), activation='relu'))
-model.add(Dense(4, activation='relu'))
-model.add(Dense(4, activation='relu'))
+model.add(Dense(20, input_dim=len(train.columns), activation='relu'))
+model.add(Dense(10, activation='relu'))
 model.add(Dense(2, activation='softmax'))
 
 print(model.summary())
@@ -84,7 +85,7 @@ callback_a = ModelCheckpoint(filepath='my_best_model.hdf5', monitor='val_loss', 
 callback_b = EarlyStopping(monitor='val_loss', mode='min', patience=20, verbose=1)
 
 # Train the model and store the output into history variable
-history = model.fit(train, output_train, validation_data=(test, output_test), epochs=13, batch_size=20, callbacks=[callback_a, callback_b])
+history = model.fit(train, output_train_cat, validation_data=(test, output_test_cat), epochs=100, batch_size=64, callbacks=[callback_a, callback_b])
 
 # The below will help with visualizing the learning curve to see how the adjusted variables effect it
 #plt.plot(history.history['accuracy'])
@@ -94,26 +95,24 @@ history = model.fit(train, output_train, validation_data=(test, output_test), ep
 #plt.legend(['training data', 'validation data'], loc='lower right')
 #plt.show()
 
-# Load best model generated, this is to be used when running the program multiple times
-model.load_weights('my_best_model.hdf5')
-scores = model.evaluate(train, output_train)
+# Load best model generated
+#model.load_weights('my_best_model.hdf5')
+scores = model.evaluate(train, output_train_cat)
 print('training data')
 print(model.metrics_names)
 print(scores)
 
 # Evaluate against validation dataset
-scores = model.evaluate(validation, output_validation)
+scores = model.evaluate(validation, output_validation_cat)
 print('validation data')
 print(model.metrics_names)
 print(scores)
 
 prediction = model.predict(validation)
-print(output_validation.head(10))
+print(output_validation_cat[0:10])
 print(prediction[0:10].round())
 
 plt.plot(output_test, prediction, '.', alpha=0.3)
 plt.xlabel('Correct labels')
 plt.ylabel('Predicted confidence scores')
-
-#  I dont like what this is showing. It doesnt show the trends I would expect and makes me think the datas distribution is leading to the 78% accuracy
 plt.show()
