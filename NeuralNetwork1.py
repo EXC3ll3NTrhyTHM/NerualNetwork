@@ -29,6 +29,7 @@ df['last_new_job'].fillna(value='unknown', inplace=True)
 
 # A lot of this code came from here https://pbpython.com/categorical-encoding.html
 df = df.replace({'relevent_experience': {'Has relevent experience':1,'No relevent experience':0}})
+# Made unknown 0 since there werent that many unknown entries
 df = df.replace({'experience': {'>20':21,'<1':0, 'unknown':0}})
 df['experience'] = pd.to_numeric(df['experience'])
 df = df.replace({'last_new_job': {'>4':5,'never':0, 'unknown':0}})
@@ -58,4 +59,9 @@ train, test = train_test_split(df, test_size=0.2)
 output_train  = train.pop('target')
 output_test = test.pop('target')
 
-print(train.shape)
+x = df.values
+min_max_scaler = preprocessing.MinMaxScaler()
+x_scaled = min_max_scaler.fit_transform(x)
+df = pd.DataFrame((x_scaled))
+
+print(df.head())
