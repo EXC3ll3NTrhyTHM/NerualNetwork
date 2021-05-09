@@ -27,7 +27,7 @@ df['company_size'].fillna(value='unknown', inplace=True)
 df['company_type'].fillna(value='unknown', inplace=True)
 df['last_new_job'].fillna(value='unknown', inplace=True)
 
-# A lot of this code came from here https://pbpython.com/categorical-encoding.html
+# A lot of categorical data encoding came from here https://pbpython.com/categorical-encoding.html
 df = df.replace({'relevent_experience': {'Has relevent experience':1,'No relevent experience':0}})
 # Made unknown 0 since there werent that many unknown entries
 df = df.replace({'experience': {'>20':21,'<1':0, 'unknown':0}})
@@ -59,9 +59,10 @@ train, test = train_test_split(df, test_size=0.2)
 output_train  = train.pop('target')
 output_test = test.pop('target')
 
+# Normalization to values between 0 and 1 from here https://stackoverflow.com/questions/26414913/normalize-columns-of-pandas-data-frame
 x = df.values
 min_max_scaler = preprocessing.MinMaxScaler()
 x_scaled = min_max_scaler.fit_transform(x)
-df = pd.DataFrame((x_scaled))
+df = pd.DataFrame(x_scaled, columns=df.columns)
 
 print(df.head())
